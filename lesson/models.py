@@ -12,7 +12,6 @@ class LessonReader(DatabaseReader):
 
     def insert_row(self):
         with connection.cursor() as cursor:
-            print(self.kwargs)
             cursor.execute("INSERT INTO {0} (title, subtitle) VALUES (%(title)s, %(subtitle)s) RETURNING id".format(self.table), self.kwargs)
             row = cursor.fetchone()
             return row[0]
