@@ -7,20 +7,21 @@ class LessonReader(DatabaseReader):
 
 
     def __init__(self, kwargs):
-        self.values = ", ".join(map(lambda val: f"'{val}'", kwargs.values()))
-        self.keys = ", ".join(kwargs.keys())
+        self.kwargs = kwargs
 
 
     def insert_row(self):
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO {0} ({1}) VALUES ({2}) RETURNING id".format(self.table, self.keys, self.values),)
+            print(self.kwargs)
+            cursor.execute("INSERT INTO {0} (title, subtitle) VALUES (%(title)s, %(subtitle)s) RETURNING id".format(self.table), self.kwargs)
             row = cursor.fetchone()
             return row[0]
 
 
     def delete_row(self):
         with connection.cursor() as cursor:
+            id = self.kwargs.get("id")
             cursor.execute(
-                "DELETE FROM {0} WHERE id = {1} RETURNING id".format(self.table, self.values), )
+                "DELETE FROM {0} WHERE id = %(id)s RETURNING id".format(self.table), {"id": id})
             row = cursor.fetchone()
             return row[0]
